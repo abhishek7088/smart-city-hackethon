@@ -5,7 +5,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useSelector } from "react-redux";
 
-// Fix Leaflet marker icon issue
+
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 
@@ -123,7 +123,7 @@ const ReportIssues = () => {
       },
     });
 
-    // Move map to the marker position when it changes
+    
     useEffect(() => {
       if (markerPosition) {
         map.flyTo([markerPosition.latitude, markerPosition.longitude], 15);

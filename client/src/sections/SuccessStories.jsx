@@ -1,11 +1,28 @@
 import React, { useEffect, useRef } from "react";
 
 const successStories = [
-  { name: "John Doe", feedback: "This platform helped me find my dream job in no time!", image: "/avatar2.webp" },
-  { name: "Jane Smith", feedback: "The AI resume builder was a game-changer for me.", image: "/avatar3.webp" },
-  { name: "David Lee", feedback: "I got interview-ready with their AI-powered mock interviews!", image: "/avatar1.webp" },
-  { name: "Emily Johnson", feedback: "A fantastic way to stay updated on industry trends!", image: "/avatar4.webp" },
+  {
+    name: "Alice Green",
+    feedback: "The smart traffic system has drastically reduced my daily commute time!",
+    image: "/avatar1.webp",
+  },
+  {
+    name: "Michael Brown",
+    feedback: "I love how the smart waste management system keeps our city clean and efficient.",
+    image: "/avatar2.webp",
+  },
+  {
+    name: "Sophia Wilson",
+    feedback: "The real-time air quality monitoring helps me plan my outdoor activities better.",
+    image: "/avatar3.webp",
+  },
+  {
+    name: "Daniel Martinez",
+    feedback: "Smart lighting has made our streets safer and more energy-efficient.",
+    image: "/avatar4.webp",
+  },
 ];
+
 
 const SuccessStories = () => {
   const sliderRef = useRef(null);

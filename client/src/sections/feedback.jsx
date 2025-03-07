@@ -1,22 +1,26 @@
 import { useState } from "react";
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
 
 const FeedbackForm = () => {
   const [reason, setReason] = useState("");
   
   const handleSubmit = () => {
-    alert(`Feedback Submitted! Reason: ${reason}`);
+    if ( !reason) {
+        alert("Please fill in feedback before submitting.");
+        return;
+      }
+    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=mayankmonu9182j@gmail.com&su=UserFeedback&body=Email:mayankmonu9182j@gmail.com%0D%0AFeedback: ${encodeURIComponent(reason)}`;
+
+    window.open(gmailComposeUrl, "_blank");
+    setReason("");
+
+
   };
 
   return (
     <div className="flex justify-center items-center py-10 bg-[#f3f5f6]">
-      <motion.div 
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        whileHover={{ scale: 1.05, boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.2)" }}
-        transition={{ duration: 0.5 }}
-        className="bg-blue-100 shadow-xl shadow-slate-500 rounded-2xl p-10 w-[600px]"
+      <div 
+       
+        className="bg-blue-100   shadow-lg shadow-slate-500 rounded-2xl p-10 w-[40%]"
       >
         <h2 className="text-xl font-bold text-center">Share Your Thoughts</h2>
         <p className="text-base text-gray-500 text-center mb-6">
@@ -36,7 +40,9 @@ const FeedbackForm = () => {
             Cancel
           </button>
         </div>
-      </motion.div>
+      </div>
+
+      
     </div>
   );
 };

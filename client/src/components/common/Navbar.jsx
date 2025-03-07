@@ -7,6 +7,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
+  const user=useSelector((state)=>state.auth.user);
+  const name=user?.name;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const logoutHandler = () => {
@@ -51,12 +53,20 @@ const Navbar = () => {
               </button>
             </>
           ) : (
+            <>
+
+            <img className="rounded-full w-10 h-10" src={`https://ui-avatars.com/api/?name=${name}&background=random`} alt="Avatar" />
+
+            
             <button
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 transition"
+              className="px-4 py-2 bg-black text-white  rounded-md hover:bg-gray-200 hover:text-black  transition"
               onClick={logoutHandler}
             >
               Log Out
             </button>
+            
+            </>
+            
           )}
         </div>
 
@@ -135,8 +145,11 @@ const Navbar = () => {
                   </button>
                 </>
               ) : (
+               <>
+               <img className="flex justify-center  items-center ml-5 rounded-full w-10 h-10" src={`https://ui-avatars.com/api/?name=${name}&background=random`} alt="Avatar" />
+
                 <button
-                  className="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-md transition"
+                  className="w-full px-4 py-2 text-left hover:bg-gray-300 rounded-md transition"
                   onClick={() => {
                     logoutHandler();
                     setIsMenuOpen(false);
@@ -144,6 +157,7 @@ const Navbar = () => {
                 >
                   Log Out
                 </button>
+               </>
               )}
             </div>
           </div>

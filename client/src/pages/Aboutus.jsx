@@ -58,7 +58,7 @@ const AboutUs = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mt-6">
             {[
               { value: "10+", label: "Years" },
-              { value: "300+", label: "Clients" },
+              { value: "300+", label: "Resolved Cases" },
               { value: "15+", label: "Awards" },
               { value: "1500", label: "Projects" },
             ].map((item, index) => (

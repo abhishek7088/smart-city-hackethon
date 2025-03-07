@@ -12,6 +12,7 @@ function App() {
     const fetchIssues = async () => {
       try {
         const response = await axios.get("http://localhost:4000/issues/getAllIssues");
+        console.log(response.data.data)
         setIssues(response.data.data);
       } catch (error) {
         toast.error("Error fetching issues");
@@ -30,6 +31,7 @@ function App() {
           issue._id === id ? { ...issue, status } : issue
         )
       );
+      
       toast.success("Status updated successfully!");
     } catch (error) {
       console.log(error);
@@ -41,18 +43,19 @@ function App() {
     filter === "All" ? issues : issues.filter((issue) => issue.status === filter);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 text-[#000000]">
+    <div className="min-h-screen bg-gradient-to-r from-blue-200 via-blue-100 to-blue-50 p-6 text-[#000000]">
       <ToastContainer />
-      <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-center text-gray-700 mb-6">
+      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-xl p-6">
+        {/* Enhanced Heading */}
+        <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text mb-6 shadow-md">
           Admin Panel - Track Issues
         </h1>
 
         {/* Filter Dropdown */}
         <div className="mb-6 flex justify-between items-center">
-          <label className="text-lg font-medium text-gray-600">Filter by Status:</label>
+          <label className="text-lg font-semibold text-gray-700">Filter by Status:</label>
           <select
-            className="border p-2 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border p-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
             onChange={(e) => setFilter(e.target.value)}
             value={filter}
           >
@@ -70,43 +73,47 @@ function App() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border border-gray-300 shadow-md rounded-lg overflow-hidden">
-              <thead className="bg-blue-600 text-white">
+            <table className="w-full border border-gray-300 shadow-lg rounded-lg overflow-hidden">
+              <thead className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
                 <tr>
-                  <th className="p-3 text-left">Category</th>
-                  <th className="p-3 text-left">Description</th>
-                  <th className="p-3 text-left">User Email</th>
-                  <th className="p-3 text-left">Status</th>
-                  <th className="p-3 text-left">Actions</th>
+                  <th className="p-4 text-left">Category</th>
+                  <th className="p-4 text-left">Description</th>
+                  <th className="p-4 text-left">User Email</th>
+                  <th className="p-4 text-left">Location</th>
+                  <th className="p-4 text-left">Status</th>
+                  <th className="p-4 text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-300">
                 {filteredIssues.map((issue, index) => (
                   <tr
                     key={issue._id}
-                    className={`hover:bg-gray-100 ${
+                    className={`hover:bg-blue-100 transition-all duration-200 ${
                       index % 2 === 0 ? "bg-gray-50" : "bg-white"
                     }`}
                   >
-                    <td className="p-3">{issue.category}</td>
-                    <td className="p-3">{issue.desc}</td>
-                    <td className="p-3">{issue.user?.email || "Unknown"}</td>
-                    <td className="p-3">
-                      <span
-                        className={`px-3 py-1 rounded-full text-white text-sm ${
-                          issue.status === "Pending"
-                            ? "bg-yellow-500"
-                            : issue.status === "In Progress"
-                            ? "bg-blue-500"
-                            : "bg-green-500"
-                        }`}
-                      >
-                        {issue.status}
-                      </span>
-                    </td>
-                    <td className="p-3">
+                    <td className="p-4 font-medium">{issue.category}</td>
+                    <td className="p-4 text-gray-700">{issue.desc}</td>
+                    <td className="p-4 text-gray-500">{issue.user?.email || "Unknown"}</td>
+
+                    <td className="p-4 text-gray-500">{issue.location.latitude}{" "}{issue.location.longitude}</td>
+                    <td className="p-4">
+  <span
+    className={`px-3 py-1 rounded-full text-white text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+      issue.status === "Pending"
+        ? "bg-yellow-500"
+        : issue.status === "In Progress"
+        ? "bg-blue-500"
+        : "bg-green-500"
+    }`}
+  >
+    {issue.status}
+  </span>
+</td>
+
+                    <td className="p-4">
                       <select
-                        className="border p-2 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border p-2 rounded-lg bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                         value={issue.status}
                         onChange={(e) => handleStatusChange(issue._id, e.target.value)}
                       >
@@ -127,3 +134,4 @@ function App() {
 }
 
 export default App;
+   
