@@ -24,8 +24,8 @@ const issueSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "resolved"],
-    default: "pending",
+    enum: ["Pending","In Progress", "Resolved"],
+    default: "Pending",
   },
   location: {
     latitude: { type: Number, required: true }, 

@@ -1,38 +1,77 @@
 import Issue from "../models/issue.js";
+import  uploadImageToCloudinary  from "../utils/imageUploader.js";
 
 
 export const getIssues = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const issues = await Issue.find({ user: userId });
-
-    if (!issues.length) {
-      return res.status(404).json({ success: false, message: "No issues found" });
+    try {
+      const userId = req.user.id;
+      const issues = await Issue.find({ user: userId });
+  
+      res.status(200).json({ 
+        success: true, 
+        data: issues, 
+        message: issues.length ? "Issues retrieved successfully" : "No issues found" 
+      });
+  
+    } catch (error) {
+      console.error("Error fetching issues:", error);
+      res.status(500).json({ success: false, message: "Server error" });
     }
+  };
 
-    res.status(200).json({ success: true, data: issues });
-  } catch (error) {
-    console.error("Error fetching issues:", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+
+  export const getAllIssues = async (req, res) => {
+    try {
+        const issues = await Issue.find().populate("user"); 
+
+        res.status(200).json({ 
+            success: true, 
+            data: issues, 
+            message: issues.length ? "Issues retrieved successfully" : "No issues found" 
+        });
+
+    } catch (error) {
+        console.error("Error fetching issues:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+    }
 };
+
+  
+
+
 
 
 export const createIssue = async (req, res) => {
   try {
-    const { category, desc, attachment, location } = req.body;
-
-    if (!category || !desc || !location?.latitude || !location?.longitude) {
+    const { category, desc,latitude,longitude } = req.body;
+    console.log(req.body)
+   
+    if (!category || !desc || !latitude || !longitude) {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
+    
+    const attachment = req.file?.attachment ;
+    console.log(attachment);
+    let attachmentImage;
+    if(attachment){
+         attachmentImage = await uploadImageToCloudinary(attachment, process.env.FOLDER_NAME);
+      
+    }
+   const image =attachmentImage?attachment.secure_url:""; 
+
+   const location={
+     longitude:longitude,
+     latitude:latitude,
+   }
     const newIssue = new Issue({
-      user: req.user.id,
-      category,
-      desc,
-      attachment,
-      location
-    });
+        user: req.user.id,
+        category,
+        desc,
+        attachment: image,  
+        location,
+      });
+      
 
     await newIssue.save();
 
@@ -49,7 +88,7 @@ export const updateIssueStatus = async (req, res) => {
     const { issueId } = req.params;
     const { status } = req.body;
 
-    if (!["pending", "resolved"].includes(status)) {
+    if (!["Pending", "Resolved","In Progress"].includes(status)) {
       return res.status(400).json({ success: false, message: "Invalid status" });
     }
 

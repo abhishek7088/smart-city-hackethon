@@ -1,47 +1,154 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setToken, setUser } from "../../slices/auth";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const token=useSelector((state)=>state.auth.token);
-  const dispatch=useDispatch();
-  const logoutHandler=()=>{
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const logoutHandler = () => {
     localStorage.removeItem('token');
     dispatch(setToken(null));
     localStorage.removeItem('user');
     dispatch(setUser(null));
     navigate('/login');
-  }
+  };
 
-  console.log(token);
+  const navigateAndCloseMenu = (path) => {
+    navigate(path);
+    setIsMenuOpen(false);
+  };
+
   return (
-    <nav className="w-full flex items-center justify-between bg-white shadow-md px-6 py-3 ">
-      <h1 className="text-xl font-bold text-gray-900">SMART CITY</h1>
-      
-      <div className="flex items-center space-x-6 text-gray-700">
-        <button className="hover:text-blue-500 transition" onClick={() => navigate("/")}>Home</button>
+    <nav className="w-full  bg-white shadow-md">
+      {/* Top Bar */}
+      <div className="flex items-center justify-between px-4 py-3 sm:px-6">
+        <h1 className="text-xl font-bold text-gray-900">SMART CITY</h1>
 
-        <div className="relative group">
-          <button className="hover:text-blue-500 transition">Resources ▼</button>
-          <div className="absolute left-0 mt-2 w-40 bg-white border rounded-md shadow-md hidden group-hover:block">
-            <button className="block w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => navigate("/resource1")}>Resource 1</button>
-            <button className="block w-full text-left px-4 py-2 hover:bg-gray-200" onClick={() => navigate("/resource2")}>Resource 2</button>
-          </div>
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex items-center space-x-6">
+          <button className="hover:text-blue-500 transition" onClick={() => navigate("/")}>Home</button>
+          <button className="hover:text-blue-500 transition" onClick={() => navigate("/report")}>Report Issue</button>
+          <button className="hover:text-blue-500 transition" onClick={() => navigate("/track")}>Track Status</button>
+          <button className="hover:text-blue-500 transition" onClick={() => navigate("/contact")}>Contact Us</button>
         </div>
 
-        <button className="hover:text-blue-500 transition" onClick={() => navigate("/report")}>Report Issue</button>
-        <button className="hover:text-blue-500 transition" onClick={() => navigate("/track")}>Track Progress</button>
-        <button className="hover:text-blue-500 transition" onClick={() => navigate("/contact")}>Contact Us</button>
+        {/* Desktop Auth Buttons */}
+        <div className="hidden lg:flex items-center space-x-3">
+          {!token ? (
+            <>
+              <button className="text-gray-600 hover:text-blue-500 transition" onClick={() => navigate("/login")}>
+                Log In
+              </button>
+              <button
+                className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition"
+                onClick={() => navigate("/signup")}
+              >
+                Sign up
+              </button>
+            </>
+          ) : (
+            <button
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 transition"
+              onClick={logoutHandler}
+            >
+              Log Out
+            </button>
+          )}
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="lg:hidden p-2 rounded-md hover:bg-gray-100 transition"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          {isMenuOpen ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
       </div>
 
-      <div className="flex space-x-3">
-        {!token && (<><button className="text-gray-600 hover:text-blue-500 transition" onClick={() => navigate("/login")}>Log In</button>
-        <button className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition" onClick={() => navigate("/signup")}>Sign In</button></>)}
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden px-4 pb-4 sm:px-6 border-t border-gray-200">
+          <div className="flex flex-col space-y-2 mt-2">
+            <button
+              className="px-4 py-2 text-left hover:bg-gray-100 rounded-md transition"
+              onClick={() => navigateAndCloseMenu("/")}
+            >
+              Home
+            </button>
+            <button
+              className="px-4 py-2 text-left hover:bg-gray-100 rounded-md transition"
+              onClick={() => navigateAndCloseMenu("/report")}
+            >
+              Report Issue
+            </button>
+            <button
+              className="px-4 py-2 text-left hover:bg-gray-100 rounded-md transition"
+              onClick={() => navigateAndCloseMenu("/track")}
+            >
+              Track Status
+            </button>
+            <button
+              className="px-4 py-2 text-left hover:bg-gray-100 rounded-md transition"
+              onClick={() => navigateAndCloseMenu("/contact")}
+            >
+              Contact Us
+            </button>
 
-        {token && (<button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-500 transition" onClick={logoutHandler}>Log Out</button>)}
-      </div>
+            <div className="border-t border-gray-200 pt-4 mt-2">
+              {!token ? (
+                <>
+                  <button
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-md transition"
+                    onClick={() => navigateAndCloseMenu("/login")}
+                  >
+                    Log In
+                  </button>
+                  <button
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-md transition"
+                    onClick={() => navigateAndCloseMenu("/signup")}
+                  >
+                    Sign Up
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-md transition"
+                  onClick={() => {
+                    logoutHandler();
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Log Out
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

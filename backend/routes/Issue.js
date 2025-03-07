@@ -1,11 +1,14 @@
 import express from "express";
-import { createIssue } from "../controllers/issueController.js";
-import { authenticateUser } from "../middlewares/authMiddleware.js";
-import multer from "multer";
+import { createIssue ,getIssues,getAllIssues, updateIssueStatus} from "../controllers/Issue.js";
+import Auth from "../middlewares/Auth.js";
+
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" }); 
 
-router.post("/", authenticateUser, upload.single("attachment"), createIssue);
+
+router.post("/createIssue", Auth, createIssue);
+router.get("/getIssues",Auth,getIssues);
+router.get("/getAllIssues",getAllIssues);
+router.put("/:issueId",updateIssueStatus)
 
 export default router;

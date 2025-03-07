@@ -3,12 +3,12 @@ const Auth = async (req, res, next) => {
     try {
 
         let token = req.header("Authorization");
-        if (token && token.startsWith("Bearer ")) {
+        if (token?.startsWith("Bearer ")) {
             token = token.split(" ")[1];
-            
         } else {
-            return res.status(401).json({ message: "token not found. Unauthorized Access" });
+            return res.status(401).json({ message: "Token not found. Unauthorized Access" });
         }
+
 
 
         try {
