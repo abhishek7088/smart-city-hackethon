@@ -28,7 +28,7 @@ const Navbar = () => {
     <nav className="w-full  bg-white shadow-md">
       {/* Top Bar */}
       <div className="flex items-center justify-between px-4 py-3 sm:px-6">
-        <h1 className="text-xl font-bold text-gray-900">SMART CITY</h1>
+        <button onClick={()=>navigate("/")} className="text-xl font-bold text-gray-900">SMART CITY</button>
 
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center space-x-6">

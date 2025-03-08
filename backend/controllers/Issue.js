@@ -1,5 +1,7 @@
 import Issue from "../models/issue.js";
 import  uploadImageToCloudinary  from "../utils/imageUploader.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 
 export const getIssues = async (req, res) => {
@@ -44,21 +46,22 @@ export const getIssues = async (req, res) => {
 export const createIssue = async (req, res) => {
   try {
     const { category, desc,latitude,longitude } = req.body;
-    console.log(req.body)
    
     if (!category || !desc || !latitude || !longitude) {
       return res.status(400).json({ success: false, message: "All fields are required" });
     }
 
     
-    const attachment = req.file?.attachment ;
-    console.log(attachment);
+    const attachment = req.files?.attachment ;
+
     let attachmentImage;
     if(attachment){
-         attachmentImage = await uploadImageToCloudinary(attachment, process.env.FOLDER_NAME);
+         attachmentImage = await uploadImageToCloudinary(attachment, process.env.FOLDER_NAME ,1000,
+          1000);
       
     }
-   const image =attachmentImage?attachment.secure_url:""; 
+    console.log("attachimage"+attachmentImage)
+   const image =attachmentImage?.secure_url; 
 
    const location={
      longitude:longitude,

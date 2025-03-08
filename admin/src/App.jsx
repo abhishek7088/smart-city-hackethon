@@ -11,8 +11,9 @@ function App() {
   useEffect(() => {
     const fetchIssues = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_APP_SERVER_URL}/issues/getAllIssues`);
-        console.log(response.data.data)
+        const response = await axios.get(
+          `${import.meta.env.VITE_APP_SERVER_URL}/issues/getAllIssues`
+        );
         setIssues(response.data.data);
       } catch (error) {
         console.log(error);
@@ -26,13 +27,14 @@ function App() {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await axios.put(`${import.meta.env.VITE_APP_SERVER_URL}/issues/${id}`, { status });
+      await axios.put(`${import.meta.env.VITE_APP_SERVER_URL}/issues/${id}`, {
+        status,
+      });
       setIssues((prevIssues) =>
         prevIssues.map((issue) =>
           issue._id === id ? { ...issue, status } : issue
         )
       );
-      
       toast.success("Status updated successfully!");
     } catch (error) {
       console.log(error);
@@ -41,22 +43,26 @@ function App() {
   };
 
   const filteredIssues =
-    filter === "All" ? issues : issues.filter((issue) => issue.status === filter);
+    filter === "All"
+      ? issues
+      : issues.filter((issue) => issue.status === filter);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-200 via-blue-100 to-blue-50 p-6 text-[#000000]">
+    <div className="min-h-screen bg-gradient-to-r from-blue-200 via-blue-100 to-blue-50 p-4 sm:p-6 text-[#000000]">
       <ToastContainer />
-      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-xl p-6">
+      <div className="max-w-5xl mx-auto bg-white shadow-xl rounded-xl p-4 sm:p-6">
         {/* Enhanced Heading */}
-        <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text mb-6 shadow-md">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-center bg-gradient-to-r from-blue-600 to-purple-600 text-transparent bg-clip-text mb-6">
           Admin Panel - Track Issues
         </h1>
 
         {/* Filter Dropdown */}
-        <div className="mb-6 flex justify-between items-center">
-          <label className="text-lg font-semibold text-gray-700">Filter by Status:</label>
+        <div className="mb-6 flex flex-col sm:flex-row justify-between items-center">
+          <label className="text-lg font-semibold text-gray-700">
+            Filter by Status:
+          </label>
           <select
-            className="border p-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+            className="border p-2 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 mt-2 sm:mt-0"
             onChange={(e) => setFilter(e.target.value)}
             value={filter}
           >
@@ -74,15 +80,16 @@ function App() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border border-gray-300 shadow-lg rounded-lg overflow-hidden">
+            <table className="w-full border border-gray-300 shadow-lg rounded-lg overflow-hidden text-sm sm:text-base">
               <thead className="bg-gradient-to-r from-blue-500 to-purple-500 text-white">
                 <tr>
-                  <th className="p-4 text-left">Category</th>
-                  <th className="p-4 text-left">Description</th>
-                  <th className="p-4 text-left">User Email</th>
-                  <th className="p-4 text-left">Location</th>
-                  <th className="p-4 text-left">Status</th>
-                  <th className="p-4 text-left">Actions</th>
+                  <th className="p-2 sm:p-4 text-left">Category</th>
+                  <th className="p-2 sm:p-4 text-left">Description</th>
+                  <th className="p-2 sm:p-4 text-left">User Email</th>
+                  <th className="p-2 sm:p-4 text-left">Location</th>
+                  <th className="p-2 sm:p-4 text-left">Status</th>
+                  <th className="p-2 sm:p-4 text-left">Attachment</th>
+                  <th className="p-2 sm:p-4 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-300">
@@ -93,30 +100,54 @@ function App() {
                       index % 2 === 0 ? "bg-gray-50" : "bg-white"
                     }`}
                   >
-                    <td className="p-4 font-medium">{issue.category}</td>
-                    <td className="p-4 text-gray-700">{issue.desc}</td>
-                    <td className="p-4 text-gray-500">{issue.user?.email || "Unknown"}</td>
+                    <td className="p-2 sm:p-4 font-medium">{issue.category}</td>
+                    <td className="p-2 sm:p-4 text-gray-700">{issue.desc}</td>
+                    <td className="p-2 sm:p-4 text-gray-500">
+                      {issue.user?.email || "Unknown"}
+                    </td>
+                    <td className="p-2 sm:p-4 text-gray-500">
+                      {issue.location.latitude} {issue.location.longitude}
+                    </td>
+                    <td className="p-2 sm:p-4">
+                      <span
+                        className={`px-2 sm:px-3 py-1 rounded-full text-white text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+                          issue.status === "Pending"
+                            ? "bg-yellow-500"
+                            : issue.status === "In Progress"
+                            ? "bg-blue-500"
+                            : "bg-green-500"
+                        }`}
+                      >
+                        {issue.status}
+                      </span>
+                    </td>
 
-                    <td className="p-4 text-gray-500">{issue.location.latitude}{" "}{issue.location.longitude}</td>
-                    <td className="p-4">
-  <span
-    className={`px-3 py-1 rounded-full text-white text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-      issue.status === "Pending"
-        ? "bg-yellow-500"
-        : issue.status === "In Progress"
-        ? "bg-blue-500"
-        : "bg-green-500"
-    }`}
-  >
-    {issue.status}
-  </span>
-</td>
+                    {/* Attachment Column */}
+                    <td className="p-2 sm:p-4 text-center">
+                      {issue.attachment ? (
+                        <a
+                          href={issue.attachment}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={issue.attachment}
+                            alt="Attachment"
+                            className="h-12 w-12 sm:h-16 sm:w-16 object-cover rounded-md"
+                          />
+                        </a>
+                      ) : (
+                        <span className="text-gray-400">No Attachment</span>
+                      )}
+                    </td>
 
-                    <td className="p-4">
+                    <td className="p-2 sm:p-4">
                       <select
-                        className="border p-2 rounded-lg bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                        className="border p-2 rounded-lg bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 text-xs sm:text-sm"
                         value={issue.status}
-                        onChange={(e) => handleStatusChange(issue._id, e.target.value)}
+                        onChange={(e) =>
+                          handleStatusChange(issue._id, e.target.value)
+                        }
                       >
                         <option value="Pending">Pending</option>
                         <option value="In Progress">In Progress</option>
@@ -135,4 +166,3 @@ function App() {
 }
 
 export default App;
-   

@@ -17,6 +17,7 @@ const app = express();
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 connectDB();
+cloudinaryConnect();
 
 const PORT = process.env.PORT || 4000; 
 
