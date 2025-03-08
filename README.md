@@ -1,4 +1,5 @@
 # Smart City
+visit now (https://smartcity-fsd8.onrender.com/)
 
 This project is a Smart City platform that allows citizens to report civic issues, track their progress, and provide feedback. The platform consists of a backend server built with Node.js and Express, and a frontend client built with React and Vite. Additionally, there is an admin panel for managing reported issues.
 
