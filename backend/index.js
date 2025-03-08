@@ -63,16 +63,19 @@ io.on("connection", (socket) => {
   socket.on("sendMessage", async ({ message, userId }) => {
     let botResponse = "I'm here to assist you with smart city concerns!";
 
-    // Fetch user’s latest issue
-    const lastIssue = await Issue.findOne({ user: userId }).sort({ date: -1 });
+    
+    const pendingIssues = await Issue.find({ user: userId, status: { $ne: "Resolved" } }).sort({ date: -1 });
 
     if (message.toLowerCase().includes("report issue")) {
-      botResponse = "Sure! Please provide the issue category (e.g., Road Damage, Water Leakage, Street Light Problem).";
+      botResponse = "Sure! Please provide the issue category (e.g., Road Damage, Water Leakage, Power Outage, Street Light Problem, Traffic Signal Issue, Public Transport Delay).";
     } 
     else if (message.toLowerCase().includes("check status")) {
-      botResponse = lastIssue
-        ? `Your latest issue: **${lastIssue.category}** - Status: **${lastIssue.status}**`
-        : "You haven't reported any issues yet.";
+      if (pendingIssues.length > 0) {
+        botResponse = `You have **${pendingIssues.length} pending issue(s)**:\n\n` +
+          pendingIssues.map(issue => `- **${issue.category}** (Status: **${issue.status}**)`).join("\n");
+      } else {
+        botResponse = "You have no pending issues at the moment.";
+      }
     } 
     else if (message.toLowerCase().includes("nearest hospital")) {
       botResponse = "The nearest hospital is **City Care Hospital** at **123 Main St**.";
@@ -85,7 +88,10 @@ io.on("connection", (socket) => {
         // Personalized Gemini prompt
         const prompt = `
         You are a chatbot for a Smart City service, assisting users with issues like road damage, water leakage, power outages, and public services.
-        The user has reported the following issues: ${lastIssue ? `${lastIssue.category} (Status: ${lastIssue.status})` : "No previous reports"}.
+        The user has reported the following pending issues: 
+        ${pendingIssues.length > 0 
+          ? pendingIssues.map(issue => `- ${issue.category} (Status: ${issue.status})`).join("\n") 
+          : "No pending issues"}.
         
         Answer in a **helpful, professional, and concise manner**.
         
