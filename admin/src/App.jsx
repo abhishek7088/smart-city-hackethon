@@ -11,10 +11,11 @@ function App() {
   useEffect(() => {
     const fetchIssues = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/issues/getAllIssues");
+        const response = await axios.get(`${import.meta.env.VITE_APP_SERVER_URL}/issues/getAllIssues`);
         console.log(response.data.data)
         setIssues(response.data.data);
       } catch (error) {
+        console.log(error);
         toast.error("Error fetching issues");
       } finally {
         setLoading(false);
@@ -25,7 +26,7 @@ function App() {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await axios.put(`http://localhost:4000/issues/${id}`, { status });
+      await axios.put(`${import.meta.env.VITE_APP_SERVER_URL}/issues/${id}`, { status });
       setIssues((prevIssues) =>
         prevIssues.map((issue) =>
           issue._id === id ? { ...issue, status } : issue

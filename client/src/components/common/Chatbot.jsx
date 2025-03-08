@@ -11,7 +11,7 @@ const Chatbot = ({ userId }) => {
     setMessages([...messages, { text: input, user: "You" }]);
     setInput("");
 
-    const response = await axios.post("http://localhost:4000/chat", {
+    const response = await axios.post(`${import.meta.env.VITE_APP_SERVER_URL}/chat`, {
       message: input,
       userId,
     });

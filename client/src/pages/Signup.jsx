@@ -19,7 +19,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:4000/auth/signup", {
+      const response = await axios.post(`${import.meta.env.VITE_APP_SERVER_URL}/auth/signup`, {
         email,
         password,
         name,

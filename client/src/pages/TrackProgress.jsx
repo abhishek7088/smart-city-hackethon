@@ -14,7 +14,7 @@ const TrackProgress = () => {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/issues/getIssues", {
+        const response = await axios.get(`${import.meta.env.VITE_APP_SERVER_URL}/issues/getIssues`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         dispatch(setIssues(response.data.data));
