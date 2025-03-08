@@ -113,7 +113,7 @@ const ReportIssues = () => {
         <div className="w-full md:w-1/2 p-6">
           <h2 className="text-2xl font-bold mb-4 text-center text-blue-800">Report an Issue</h2>
           {message && <p className="mb-4 text-center text-red-500 font-semibold">{message}</p>}
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <label className="block font-medium text-gray-700">Category</label>
             <select name="category" value={formData.category} onChange={handleChange} required className="w-full p-2 border rounded-md bg-blue-50">
               <option value="">Select a category</option>

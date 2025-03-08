@@ -2,15 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import { SendHorizonal, MessageCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import {useSelector} from 'react-redux';
+
 
 const socket = io(import.meta.env.VITE_APP_SERVER_URL);
 
-const Chatbot = ({ userId }) => {
+const Chatbot = () => {
+  
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const chatContainerRef = useRef(null);
+  const user=useSelector((state)=>state.auth.user);
+  const userId=user?._id;
 
   useEffect(() => {
     socket.on("botTyping", () => {
@@ -43,6 +48,7 @@ const Chatbot = ({ userId }) => {
     setIsTyping(true);
     setInput("");
   };
+
 
   return (
     <div className="fixed bottom-4 right-4">
