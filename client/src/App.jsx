@@ -39,7 +39,7 @@ function App() {
           </Suspense>
         </div>
 
-        <Chatbot userId={user._id}/>
+        <PrivateRoute><Chatbot userId={user?._id}/></PrivateRoute>
 
         <Footer />
       </div>
