@@ -5,80 +5,114 @@ import issueRoute from "./routes/Issue.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { cloudinaryConnect } from "./config/cloudinary.js";
-import fileUpload  from "express-fileupload";
-import OpenAI from "openai";
-
-
-
+import fileUpload from "express-fileupload";
+import http from "http";
+import { Server } from "socket.io";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import mongoose from "mongoose";
+import Issue from "./models/issue.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 connectDB();
 cloudinaryConnect();
 
-const PORT = process.env.PORT || 4000; 
-
+const PORT = process.env.PORT || 4000;
 const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200
-}));
-
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 
 app.use(
-	fileUpload({
-		useTempFiles:true,
-		tempFileDir:"/tmp",
-	})
-)
-
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp",
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
 
 app.use("/auth", authRoute);
-app.use("/issues",issueRoute);
-app.post("/chat", async (req, res) => {
-  const { message, userId } = req.body;
+app.use("/issues", issueRoute);
 
-  let botResponse = "I'm here to help with smart city issues!";
+io.on("connection", (socket) => {
+  console.log("A user connected");
 
-  if (message.toLowerCase().includes("report issue")) {
-    botResponse = "Please provide the issue category (e.g., Road Damage, Water Leakage, etc.).";
-  } 
-  else if (message.toLowerCase().includes("check status")) {
-    const issue = await Issue.findOne({ user: userId }).sort({ date: -1 });
-    botResponse = issue ? `Your latest issue is: ${issue.category} - Status: ${issue.status}` : "No issues found.";
-  } 
-  else {
-    // Use OpenAI GPT for general responses
-    const aiResponse = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: message }],
-    });
+  socket.on("sendMessage", async ({ message, userId }) => {
+    let botResponse = "I'm here to assist you with smart city concerns!";
 
-    botResponse = aiResponse.choices[0].message.content;
-  }
+    // Fetch user’s latest issue
+    const lastIssue = await Issue.findOne({ user: userId }).sort({ date: -1 });
 
-  res.json({ reply: botResponse });
+    if (message.toLowerCase().includes("report issue")) {
+      botResponse = "Sure! Please provide the issue category (e.g., Road Damage, Water Leakage, Street Light Problem).";
+    } 
+    else if (message.toLowerCase().includes("check status")) {
+      botResponse = lastIssue
+        ? `Your latest issue: **${lastIssue.category}** - Status: **${lastIssue.status}**`
+        : "You haven't reported any issues yet.";
+    } 
+    else if (message.toLowerCase().includes("nearest hospital")) {
+      botResponse = "The nearest hospital is **City Care Hospital** at **123 Main St**.";
+    } 
+    else if (message.toLowerCase().includes("garbage collection schedule")) {
+      botResponse = "Garbage collection in your area happens every **Monday and Thursday at 7 AM**.";
+    } 
+    else {
+      try {
+        // Personalized Gemini prompt
+        const prompt = `
+        You are a chatbot for a Smart City service, assisting users with issues like road damage, water leakage, power outages, and public services.
+        The user has reported the following issues: ${lastIssue ? `${lastIssue.category} (Status: ${lastIssue.status})` : "No previous reports"}.
+        
+        Answer in a **helpful, professional, and concise manner**.
+        
+        User Query: "${message}"
+        `;
+
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+        const result = await model.generateContent(prompt);
+        botResponse = result.response.text();
+      } catch (error) {
+        console.error("Gemini API Error:", error);
+        botResponse = "Sorry, I'm having trouble processing your request.";
+      }
+    }
+
+    socket.emit("receiveMessage", { reply: botResponse });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
 });
-
 
 app.get("/", (req, res) => {
   res.send("SERVER RUNNING");
 });
 
-app.listen(PORT, () => {
-  console.log("Server running on http://localhost:4000");
+server.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
